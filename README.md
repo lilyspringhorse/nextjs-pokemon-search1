@@ -39,3 +39,42 @@ npm run dev
 起動後、ブラウザで http://localhost:3000 にアクセスすると下記のようなページが表示されます。
 
 <img src="images/step1.png" width="240"/>
+
+## STEP2: ポケモンの表示
+
+トップページにポケモンを表示してみましょう。
+
+page.tsx の内容を下記のように変更します。
+
+```typescript
+import Image from 'next/image';
+
+export default function Home() {
+    return (
+        <div className="min-h-screen p-8">
+            <div>
+                <div>ピカチュウ</div>
+                <div>でんき</div>
+                <Image
+                    src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png"
+                    alt="ピカチュウ"
+                    width={200}
+                    height={200}
+                />
+            </div>
+        </div>
+    );
+}
+```
+
+next/image コンポーネントに使用するホストとして `https://raw.githubusercontent.com` を追加します。
+
+```
+const nextConfig: NextConfig = {
+    images: {
+        remotePatterns: [new URL('https://raw.githubusercontent.com/**')],
+    },
+};
+```
+
+ブラウザでポケモンの名称、タイプ、画像が表示されていることを確認してください。
