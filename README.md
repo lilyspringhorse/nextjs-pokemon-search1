@@ -1,6 +1,7 @@
 # pokemon-search1
 
 本プロジェクトは Next.js を使って簡単なウェブアプリケーションを作ってみるチュートリアルです。
+
 バックエンドには [PokeAPI](https://pokeapi.co/) を使用します。
 
 ## 準備
@@ -27,11 +28,11 @@ npx create-next-app@latest pokemon-search1 --ts --tailwind --eslint --src-dir --
 -   import-alias: import に @ などの alias を使用可能とする
 -   turbopack: バンドラーに Turbopack を使用
 
-pokemon-seartch1 フォルダ下にアプリケーションが作成されます。
-pokemon-seartch1 フォルダ下に移動し、アプリケーションを起動します。
+pokemon-search1 フォルダ下にアプリケーションが作成されます。
+pokemon-search1 フォルダ下に移動し、アプリケーションを起動します。
 
 ```
-cd pokemon-seartch1
+cd pokemon-search1
 npm run dev
 ```
 
