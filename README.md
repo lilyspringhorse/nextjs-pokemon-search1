@@ -28,7 +28,7 @@ npx create-next-app@latest pokemon-search1 --ts --tailwind --eslint --src-dir --
 -   import-alias: import に @ などの alias を使用可能とする
 -   turbopack: バンドラーに Turbopack を使用
 
-pokemon-search1 フォルダ下にアプリケーションが作成されます。
+pokemon-search1 フォルダ下にアプリケーションが作成されます。  
 pokemon-search1 フォルダ下に移動し、アプリケーションを起動します。
 
 ```
@@ -85,7 +85,7 @@ const nextConfig: NextConfig = {
 
 src フォルダ下に components フォルダを作成し、PokemonCard.tsx というファイルを作成します。
 
-ファイルの内容は下記のようにします。
+ファイルの内容は下記のようにします。  
 親コンポーネントから受け取る props として name、types、imageUrl を定義しています。
 
 ```
@@ -142,7 +142,7 @@ PokemonCard コンポーネントに下記のようなスタイルの指定を�
 -   タイプはグレーで小さく表示
 -   余白を追加
 
-Tailwind CSS では className に CSS を簡素化したユーティリティクラスを指定します。
+Tailwind CSS では className に CSS を簡素化したユーティリティクラスを指定します。  
 下記のように className を追加します。
 
 ```
@@ -155,7 +155,7 @@ Tailwind CSS では className に CSS を簡素化したユーティリティク
     );
 ```
 
-ブラウザで 指定通りの表示となっていることを確認してください。
+ブラウザで 指定通りの表示となっていることを確認してください。  
 (下図ではポケモン画像はカットしています)
 
 <img src="images/step4.png" width="240"/>
