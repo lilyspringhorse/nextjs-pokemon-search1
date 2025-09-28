@@ -12,9 +12,9 @@ export default function PokemonCard({
     imageUrl,
 }: PokemonCardProps) {
     return (
-        <div>
-            <div>{name}</div>
-            <div>{types.join(', ')}</div>
+        <div className="flex flex-col items-center p-6 rounded-xl shadow-lg bg-white w-96">
+            <div className="text-2xl font-bold mb-2">{name}</div>
+            <div className="text-sm text-gray-600 mb-4">{types.join(', ')}</div>
             <Image src={imageUrl} alt={name} width={200} height={200} />
         </div>
     );

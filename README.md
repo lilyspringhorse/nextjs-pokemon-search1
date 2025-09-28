@@ -21,7 +21,7 @@ npx create-next-app@latest pokemon-search1 --ts --tailwind --eslint --src-dir --
 `npx create-next-app@latest`で対話型でオプションを指定することも可能ですが、コマンドラインのオプションで下記のような指定を行っています。
 
 -   ts: TypeScript を使用
--   tailwind: CSS のフレームワークに [TailWind CSS](https://tailwindcss.com/) を使用
+-   tailwind: CSS のフレームワークに [Tailwind CSS](https://tailwindcss.com/) を使用
 -   eslint: 静的解析に [ESLint](https://eslint.org/) を使用
 -   src-dir: コードを src フォルダ下に格納
 -   app: Next.js のルーティングに App Router を使用
@@ -131,3 +131,31 @@ export default function Home() {
 ```
 
 ブラウザで STEP2 と同様の表示となっていることを確認してください。
+
+## STEP4: Tailwind CSS による装飾
+
+PokemonCard コンポーネントに下記のようなスタイルの指定を追加してみましょう。
+
+-   全体をカードっぽく丸角にして、シャドウを付ける
+-   カード内をセンタリングする
+-   名前は太字で大きく表示
+-   タイプはグレーで小さく表示
+-   余白を追加
+
+Tailwind CSS では className に CSS を簡素化したユーティリティクラスを指定します。
+下記のように className を追加します。
+
+```
+    return (
+        <div className="flex flex-col items-center p-6 rounded-xl shadow-lg bg-white w-96">
+            <div className="text-2xl font-bold mb-2">{name}</div>
+            <div className="text-sm text-gray-600 mb-4">{types.join(', ')}</div>
+            <Image src={imageUrl} alt={name} width={200} height={200} />
+        </div>
+    );
+```
+
+ブラウザで 指定通りの表示となっていることを確認してください。
+(下図ではポケモン画像はカットしています)
+
+<img src="images/step4.png" width="240"/>
