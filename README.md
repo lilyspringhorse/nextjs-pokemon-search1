@@ -78,3 +78,56 @@ const nextConfig: NextConfig = {
 ```
 
 ブラウザでポケモンの名称、タイプ、画像が表示されていることを確認してください。
+
+## STEP3: コンポーネントの作成
+
+1 体のポケモンの表示を箇所を 1 コンポーネントとして分離します。
+
+src フォルダ下に components フォルダを作成し、PokemonCard.tsx というファイルを作成します。
+
+ファイルの内容は下記のようにします。
+親コンポーネントから受け取る props として name、types、imageUrl を定義しています。
+
+```
+import Image from 'next/image';
+
+interface PokemonCardProps {
+    name: string;
+    types: string[];
+    imageUrl: string;
+}
+
+export default function PokemonCard({
+    name,
+    types,
+    imageUrl,
+}: PokemonCardProps) {
+    return (
+        <div>
+            <div>{name}</div>
+            <div>{types.join(', ')}</div>
+            <Image src={imageUrl} alt={name} width={200} height={200} />
+        </div>
+    );
+}
+```
+
+page.tsx を上記 PokemonCard を呼び出す形式に変更します。
+
+```
+import PokemonCard from '../components/PokemonCard';
+
+export default function Home() {
+    return (
+        <div className="min-h-screen p-8">
+            <PokemonCard
+                name="ピカチュウ"
+                types={['でんき']}
+                imageUrl="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png"
+            />
+        </div>
+    );
+}
+```
+
+ブラウザで STEP2 と同様の表示となっていることを確認してください。
