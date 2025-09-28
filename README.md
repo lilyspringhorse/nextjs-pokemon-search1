@@ -159,3 +159,146 @@ Tailwind CSS では className に CSS を簡素化したユーティリティク
 (下図ではポケモン画像はカットしています)
 
 <img src="images/step4.png" width="240"/>
+
+## STEP5: ポケモン検索用コンポーネントの作成
+
+これまでは特定のポケモンを表示するだけでしたが、ポケモンの名前を入力して検索できるようにします。
+
+まず、検索 UI となる PokemonSearch コンポーネントを追加します。  
+components フォルダ下に PokemonSearch.tsx というファイルを作成します。
+
+ファイルの内容は下記のようにします。  
+親コンポーネントから受け取る props として onSearch というコールバック関数を定義しています。  
+input 要素に入力したポケモン名を searchName という state 変数に保持します。  
+submit ボタンが押されると、searchName を引数にして onSearch を呼び出します。
+
+```
+'use client';
+
+import { useState } from 'react';
+
+interface PokemonSearchProps {
+    onSearch: (pokemonName: string) => void;
+}
+
+export default function PokemonSearch({ onSearch }: PokemonSearchProps) {
+    const [searchName, setSearchName] = useState('');
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        onSearch(searchName);
+    };
+
+    return (
+        <form onSubmit={handleSubmit} className="flex gap-2 mb-4">
+            <input
+                type="text"
+                value={searchName}
+                onChange={(e) => setSearchName(e.target.value)}
+                placeholder="ポケモン名を入力"
+                className="px-4 py-2 border rounded-lg max-w-96"
+            />
+            <button
+                type="submit"
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            >
+                検索
+            </button>
+        </form>
+    );
+}
+```
+
+次に親コンポーネント側を修正します。
+親コンポーネントでは、PokemonSearch に渡すコールバック関数を実装します。  
+コールバック関数ではポケモンの検索を行いますが、このステップでは検索は行わず、入力されたポケモン名を表示するだけとします。
+
+親コンポーネントを修正するにあたり、ポケモンデータの受け渡しのため、Pokemon という型を新たに定義します。
+src フォルダ下に types フォルダを作成し、pokemon というファイルを作成します。
+ファイルの内容は下記のようにします。
+
+```
+export type Pokemon = {
+    name: string;
+    types: string[];
+    imageUrl: string;
+};
+```
+
+PokemonCard の props も Pokemon を受け取る形に変更します。
+
+```
+import { Pokemon } from '@/types/pokemon';
+import Image from 'next/image';
+
+interface PokemonCardProps {
+    pokemon: Pokemon;
+}
+
+export default function PokemonCard({ pokemon }: PokemonCardProps) {
+    return (
+        <div className="flex flex-col items-center p-6 rounded-xl shadow-lg bg-white w-96">
+            <div className="text-2xl font-bold mb-2">{pokemon.name}</div>
+            <div className="text-sm text-gray-600 mb-4">
+                {pokemon.types.join(', ')}
+            </div>
+            <Image
+                src={pokemon.imageUrl}
+                alt={pokemon.name}
+                width={200}
+                height={200}
+            />
+        </div>
+    );
+}
+```
+
+親コンポーネントを修正します。  
+検索したポケモンのデータを保持するため、searchedPokemon という state 変数を追加します。
+コールバック関数から渡されたポケモン名はこの変数の name にセットします。
+ポケモン名が空の場合は searchedPokemon を null とし、PokemonCard を表示しないようにします。
+検索処理を実装していないため、types や imageUrl の情報がありませんが、ひとまずこれまで使用してきたデータを入れておきます。  
+全体のコードは下記のようになります。
+
+```
+'use client';
+
+import { useState } from 'react';
+import PokemonCard from '../components/PokemonCard';
+import PokemonSearch from '../components/PokemonSearch';
+import { Pokemon } from '@/types/pokemon';
+
+export default function Home() {
+    // 検索されたポケモンの情報を状態として保持
+    const [searchedPokemon, setSearchedPokemon] = useState<Pokemon | null>(
+        null
+    );
+
+    const handleSearch = (searchName: string) => {
+        if (!searchName) {
+            // 入力が空の場合は検索結果をクリア
+            setSearchedPokemon(null);
+            return;
+        }
+        // TODO: 後でPokeAPIを使用してポケモンデータを取得する処理を追加。ひとまずname以外は固定データを使用。
+        setSearchedPokemon({
+            name: searchName,
+            types: ['でんき'],
+            imageUrl:
+                'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png',
+        });
+    };
+
+    return (
+        <div className="min-h-screen p-8">
+            <PokemonSearch onSearch={handleSearch} />
+            {searchedPokemon && <PokemonCard pokemon={searchedPokemon} />}
+        </div>
+    );
+}
+```
+
+ブラウザで動作確認します。  
+ポケモン名を入力していなければ PokemonCard は表示されず、ポケモン名を入力して検索ボタンを押すと、入力内容が反映された PokemonCard が表示されます。
+
+<img src="images/step5.png" width="240"/>
