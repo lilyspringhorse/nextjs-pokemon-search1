@@ -6,14 +6,14 @@ interface PokemonCardProps {
     pokemon: Pokemon;
 }
 
-function translateTypes(types: string[]) {
+const translateTypes = (types: string[]) => {
     return types
         .map((t) => {
             const key = t.toLowerCase();
             return (typeNames as Record<string, string>)[key] ?? 'ふめい';
         })
         .join('、');
-}
+};
 
 export default function PokemonCard({ pokemon }: PokemonCardProps) {
     return (
