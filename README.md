@@ -302,3 +302,118 @@ export default function Home() {
 ポケモン名を入力していなければ PokemonCard は表示されず、ポケモン名を入力して検索ボタンを押すと、入力内容が反映された PokemonCard が表示されます。
 
 <img src="images/step5.png" width="240"/>
+
+## STEP6: PokeAPI による検索
+
+PokeAPI を使って、ポケモンの名前から情報を取得できるようにします。
+
+検索には下記 API を使用します。
+
+```
+GET https://pokeapi.co/api/v2/pokemon/{id or name}/
+```
+
+name は英語の名前にしか対応していません。
+
+HTTP 通信は標準の fetch でも行えますが、ここでは、axios というライブラリを使用します。  
+ターミナル上の pokemon-search1 フォルダ下で下記コマンドを実行し、axios をインストールしてください。
+
+```
+npm i axios
+```
+
+page.tsx で利用するため、page.tsx に axios の import 文を追加します。
+
+```
+import axios from 'axios';
+```
+
+page.tsx に検索処理を行う非同期関数 searchPokemon を追加します。  
+API のレスポンスからタイプと画像の情報を抽出して Pokemon 型のデータを作成、返却します。  
+axios.get はすぐには結果が返らない非同期関数です。  
+await を使うことにより、結果が返るのを待って値を取得することができます。  
+API のエラー処理は try...catch の catch ブロックで行います。
+
+```
+    const searchPokemon = async (name: string): Promise<Pokemon> => {
+        try {
+            const res = await axios.get(
+                `https://pokeapi.co/api/v2/pokemon/${name.toLowerCase()}`
+            );
+            const data = res.data;
+            return {
+                name,
+                types: data.types.map(
+                    (typeInfo: { type: { name: string } }) => typeInfo.type.name
+                ),
+                imageUrl: data.sprites.other['official-artwork'].front_default,
+            };
+        } catch (err: unknown) {
+            // axios のレスポンスがあり 404 の場合は「見つかりません」エラーを投げる
+            if (axios.isAxiosError(err) && err.response?.status === 404) {
+                throw new Error('ポケモンが見つかりません');
+            }
+            throw err;
+        }
+    };
+```
+
+前のステップで作成した handleSearch を searchPokemon を使って検索するように修正します。
+
+その前に、searchPokemon が返したエラーを表示するための仕組みを作成しておきます。  
+エラーメッセージを保持する state 変数を追加します。
+
+```
+    // ページ内に表示するエラーメッセージ
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+```
+
+JSX 側に表示する要素を追加します。
+
+```
+        <div className="min-h-screen p-8">
+            <PokemonSearch onSearch={handleSearch} />
+            {searchedPokemon && <PokemonCard pokemon={searchedPokemon} />}
+            {errorMessage && (
+                <div className="mb-4 text-red-600 font-medium">
+                    {errorMessage}
+                </div>
+            )}
+        </div>
+```
+
+searchPokemon、setErrorMessage を使って検索処理を行うように handleSearch を修正します。  
+handleSearch も async を付与して非同期関数に変更します。
+
+```
+    const handleSearch = async (searchName: string) => {
+        if (!searchName) {
+            // 入力が空の場合は検索結果をクリア
+            setSearchedPokemon(null);
+            setErrorMessage(null);
+            return;
+        }
+        try {
+            const pokemon = await searchPokemon(searchName);
+            setSearchedPokemon(pokemon);
+            setErrorMessage(null);
+        } catch (error) {
+            if (error instanceof Error) {
+                setErrorMessage(error.message);
+            } else {
+                setErrorMessage('予期せぬエラーが発生しました');
+            }
+            setSearchedPokemon(null);
+        }
+    };
+```
+
+ブラウザで動作確認します。  
+ポケモン名に「Charmander」と入力して検索ボタンを押します。
+検索が成功すると、対応する PokemonCard が表示されます。
+
+<img src="images/step6_found.png" width="240"/>
+
+次に、ポケモン名に API が対応していない「Hitokage」を入力して検索ボタンを押します。
+
+<img src="images/step6_not_found.png" width="240"/>
