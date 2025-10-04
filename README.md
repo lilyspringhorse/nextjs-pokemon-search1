@@ -409,7 +409,7 @@ handleSearch も async を付与して非同期関数に変更します。
 ```
 
 ブラウザで動作確認します。  
-ポケモン名に「Charmander」と入力して検索ボタンを押します。
+ポケモン名に「Charmander」と入力して検索ボタンを押します。  
 検索が成功すると、対応する PokemonCard が表示されます。
 
 <img src="images/step6_found.png" width="240"/>
@@ -418,3 +418,67 @@ handleSearch も async を付与して非同期関数に変更します。
 エラーメッセージが表示されます。
 
 <img src="images/step6_not_found.png" width="240"/>
+
+## STEP7: タイプの日本語表示
+
+PokeAPI で返るタイプは「fire」といった英語表記ですが、これを日本語で表示できるようにします。
+
+まず、英語->日本語の翻訳ファイルを作成します。  
+types フォルダ下に下記のような内容の typeNamesJa.json を作成します。
+
+```
+{
+    "normal": "ノーマル",
+    "fire": "ほのお",
+    "water": "みず",
+    "grass": "くさ",
+    "electric": "でんき",
+    "ice": "こおり",
+    "fighting": "かくとう",
+    "poison": "どく",
+    "ground": "じめん",
+    "flying": "ひこう",
+    "psychic": "エスパー",
+    "bug": "むし",
+    "rock": "いわ",
+    "ghost": "ゴースト",
+    "dragon": "ドラゴン",
+    "dark": "あく",
+    "steel": "はがね",
+    "fairy": "フェアリー"
+}
+```
+
+PokemonCard コンポーネントで英語->日本語変換を行います。
+typeNamesJa.json を import します。
+
+```
+import typeNamesJa from '@/types/typeNamesJa.json';
+```
+
+タイプの英語->日本語変換を行う関数 translateTypes を追加します。
+
+```
+function translateTypes(types: string[]) {
+    return types
+        .map((t) => {
+            const key = t.toLowerCase();
+            return (typeNamesJa as Record<string, string>)[key] ?? 'ふめい';
+        })
+        .join('、');
+}
+```
+
+translateTypes の結果を表示するように変更します。
+
+```
+            <div className="text-sm text-gray-600 mb-4">
+                {translateTypes(pokemon.types)}
+            </div>
+```
+
+ブラウザで動作確認します。  
+ポケモン名に「Charmander」と入力して検索ボタンを押します。  
+タイプが「ほのお」と表示されます。
+
+<img src="images/step7.png" width="240"/>
