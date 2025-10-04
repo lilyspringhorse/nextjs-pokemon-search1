@@ -5,6 +5,7 @@ import PokemonCard from '../components/PokemonCard';
 import PokemonSearch from '../components/PokemonSearch';
 import { Pokemon } from '@/types/pokemon';
 import axios from 'axios';
+import pokemonNames from '@/types/pokemonNames.json';
 
 export default function Home() {
     // 検索されたポケモンの情報を状態として保持
@@ -21,8 +22,17 @@ export default function Home() {
             setErrorMessage(null);
             return;
         }
+
+        // 日本語名を英語名に変換
+        const enName = getEnName(searchName);
+        if (!enName) {
+            setErrorMessage('ポケモンの英語名が見つかりません');
+            setSearchedPokemon(null);
+            return;
+        }
+
         try {
-            const pokemon = await searchPokemon(searchName);
+            const pokemon = await searchPokemon(searchName, enName);
             setSearchedPokemon(pokemon);
             setErrorMessage(null);
         } catch (error) {
@@ -35,14 +45,17 @@ export default function Home() {
         }
     };
 
-    const searchPokemon = async (name: string): Promise<Pokemon> => {
+    const searchPokemon = async (
+        jaName: string,
+        enName: string
+    ): Promise<Pokemon> => {
         try {
             const res = await axios.get(
-                `https://pokeapi.co/api/v2/pokemon/${name.toLowerCase()}`
+                `https://pokeapi.co/api/v2/pokemon/${enName.toLowerCase()}`
             );
             const data = res.data;
             return {
-                name,
+                name: jaName,
                 types: data.types.map(
                     (typeInfo: { type: { name: string } }) => typeInfo.type.name
                 ),
@@ -55,6 +68,10 @@ export default function Home() {
             }
             throw err;
         }
+    };
+
+    const getEnName = (jaName: string) => {
+        return (pokemonNames as Record<string, string>)[jaName];
     };
 
     return (

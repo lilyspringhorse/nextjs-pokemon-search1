@@ -459,14 +459,14 @@ import typeNames from '@/types/typeNames.json';
 タイプの英語->日本語変換を行う関数 translateTypes を追加します。
 
 ```
-function translateTypes(types: string[]) {
+const translateTypes = (types: string[]) => {
     return types
         .map((t) => {
             const key = t.toLowerCase();
             return (typeNames as Record<string, string>)[key] ?? 'ふめい';
         })
         .join('、');
-}
+};
 ```
 
 translateTypes の結果を表示するように変更します。
@@ -482,3 +482,81 @@ translateTypes の結果を表示するように変更します。
 タイプが「ほのお」と表示されます。
 
 <img src="images/step7.png" width="240"/>
+
+## STEP8: ポケモン名の日本語対応
+
+ポケモン名に日本語を入力して検索できるようにします。  
+PokeAPI の名前による検索は英語にしか対応していませんが、前処理として日本語->英語変換を追加します。
+
+まず、日本語->英語の翻訳ファイルを作成します。  
+types フォルダ下に [pokemonNames.json](./pokemon-search1/src/types/pokemonNames.json) をコピーしてください。
+下記のように日本語をキーに英語が定義された JSON となっています。
+
+```
+{
+    "フシギダネ": "Bulbasaur",
+    "フシギソウ": "Ivysaur",
+```
+
+page.tsx で日本語->英語変換を行います。
+pokemonNames.json を import します。
+
+```
+import pokemonNames from '@/types/pokemonNames.json';
+```
+
+ポケモン名の日本語->英語変換を行う関数 getEnName を追加します。
+
+```
+    const getEnName = (jaName: string) => {
+        return (pokemonNames as Record<string, string>)[jaName];
+    };
+```
+
+searchPokemon に英語名も渡せるように引数を追加します。
+return 時の name は日本語名に設定します。
+
+```
+    const searchPokemon = async (
+        jaName: string,
+        enName: string
+    ): Promise<Pokemon> => {
+        try {
+            const res = await axios.get(
+                `https://pokeapi.co/api/v2/pokemon/${enName.toLowerCase()}`
+            );
+            const data = res.data;
+            return {
+                name: jaName,
+                types: data.types.map(
+```
+
+searchPokemon を呼び出す前に getEnName で英語名を取得し、searchPokemon に渡すように修正します。  
+英語名が見つからない場合はエラーを表示します。
+
+```
+        if (!searchName) {
+            // 入力が空の場合は検索結果をクリア
+            setSearchedPokemon(null);
+            setErrorMessage(null);
+            return;
+        }
+
+        // 日本語名を英語名に変換
+        const enName = getEnName(searchName);
+        if (!enName) {
+            setErrorMessage('ポケモンの英語名が見つかりません');
+            setSearchedPokemon(null);
+            return;
+        }
+
+        try {
+            const pokemon = await searchPokemon(searchName, enName);
+            setSearchedPokemon(pokemon);
+```
+
+ブラウザで動作確認します。  
+ポケモン名に「ヒトカゲ」と入力して検索ボタンを押し、ポケモンが表示されることを確認します。  
+他の好きなポケモン名でも検索してみてください。
+
+<img src="images/step8.png" width="240"/>
