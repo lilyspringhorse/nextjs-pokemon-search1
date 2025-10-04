@@ -1,6 +1,6 @@
 import { Pokemon } from '@/types/pokemon';
 import Image from 'next/image';
-import typeNamesJa from '@/types/typeNamesJa.json';
+import typeNames from '@/types/typeNames.json';
 
 interface PokemonCardProps {
     pokemon: Pokemon;
@@ -10,7 +10,7 @@ function translateTypes(types: string[]) {
     return types
         .map((t) => {
             const key = t.toLowerCase();
-            return (typeNamesJa as Record<string, string>)[key] ?? 'ふめい';
+            return (typeNames as Record<string, string>)[key] ?? 'ふめい';
         })
         .join('、');
 }

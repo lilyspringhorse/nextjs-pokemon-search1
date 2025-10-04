@@ -424,7 +424,7 @@ handleSearch も async を付与して非同期関数に変更します。
 PokeAPI で返るタイプは「fire」といった英語表記ですが、これを日本語で表示できるようにします。
 
 まず、英語->日本語の翻訳ファイルを作成します。  
-types フォルダ下に下記のような内容の typeNamesJa.json を作成します。
+types フォルダ下に下記のような内容の typeNames.json を作成します。
 
 ```
 {
@@ -450,10 +450,10 @@ types フォルダ下に下記のような内容の typeNamesJa.json を作成�
 ```
 
 PokemonCard コンポーネントで英語->日本語変換を行います。
-typeNamesJa.json を import します。
+typeNames.json を import します。
 
 ```
-import typeNamesJa from '@/types/typeNamesJa.json';
+import typeNames from '@/types/typeNames.json';
 ```
 
 タイプの英語->日本語変換を行う関数 translateTypes を追加します。
@@ -463,7 +463,7 @@ function translateTypes(types: string[]) {
     return types
         .map((t) => {
             const key = t.toLowerCase();
-            return (typeNamesJa as Record<string, string>)[key] ?? 'ふめい';
+            return (typeNames as Record<string, string>)[key] ?? 'ふめい';
         })
         .join('、');
 }
