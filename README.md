@@ -414,6 +414,7 @@ handleSearch も async を付与して非同期関数に変更します。
 
 <img src="images/step6_found.png" width="240"/>
 
-次に、ポケモン名に API が対応していない「Hitokage」を入力して検索ボタンを押します。
+次に、ポケモン名に API が対応していない「Hitokage」を入力して検索ボタンを押します。  
+エラーメッセージが表示されます。
 
 <img src="images/step6_not_found.png" width="240"/>
