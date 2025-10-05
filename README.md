@@ -560,3 +560,106 @@ searchPokemon を呼び出す前に getEnName で英語名を取得し、searchP
 他の好きなポケモン名でも検索してみてください。
 
 <img src="images/step8.png" width="240"/>
+
+## STEP9: ポケモン名の前方一致検索
+
+ポケモン名を全て入力しなくても、先頭の何文字かを入力して検索すれば一致するポケモンを表示できるようにします。
+
+getEnName は、引数の日本語名に完全に一致する英語名を返す関数でしたが、日本語名の先頭に一致するものがあれば、その日本語名と英語名のペアをリストにして返すようにします。  
+まず日本語名/英語名ペアの型を定義します。
+
+```
+    // 日本語名/英語名ペアの型
+    type Candidate = { ja: string; en: string };
+```
+
+getEnName を getCandidates という名称に変更し、下記のように変更します。
+
+```
+    // 指定された日本語名に対して、完全一致があればそれを最優先で返す。
+    // 完全一致がなければ、前方一致でヒットするすべての (ja, en) ペアを返す。
+    const getCandidates = (jaName: string): Candidate[] => {
+        const map = pokemonNames as Record<string, string>;
+        // 完全一致チェック
+        const exact = map[jaName];
+        if (exact) return [{ ja: jaName, en: exact }];
+
+        // 前方一致 (startsWith) で候補を収集
+        const candidates: { ja: string; en: string }[] = [];
+        const needle = jaName;
+        for (const key of Object.keys(map)) {
+            if (key.startsWith(needle)) {
+                candidates.push({ ja: key, en: map[key] });
+            }
+        }
+        return candidates;
+    };
+```
+
+getEnName の呼び出し箇所を getCandidates に変更します。
+
+```
+        // 日本語名を英語名に変換（完全一致がなければ前方一致でヒットするものを全件取得）
+        const candidates: Candidate[] = getCandidates(searchName);
+        if (candidates.length === 0) {
+            setErrorMessage('ポケモンの英語名が見つかりません');
+            setSearchedPokemons([]);
+            return;
+        }
+```
+
+次に searchPokemon による検索結果をリストで保持するように変更します。  
+searchedPokemon を Pokemon[]を保持する searchedPokemons に変更します。
+
+```
+    // 検索されたポケモンの情報を状態として保持（複数対応）
+    const [searchedPokemons, setSearchedPokemons] = useState<Pokemon[]>([]);
+```
+
+handleSearch の検索処理を下記のように変更します。  
+await Promise.all()を使って全ての検索処理が完了するのを待ってヒットした件数をチェックするようにしています。
+
+```
+        try {
+            // 各候補について API を並列実行。
+            const pokemons: Pokemon[] = [];
+            await Promise.all(
+                candidates.map(async ({ ja, en }) => {
+                    const pokemon = await searchPokemon(ja, en);
+                    pokemons.push(pokemon);
+                })
+            );
+            if (pokemons.length === 0) {
+                // 全件失敗
+                setErrorMessage('ポケモンが見つかりません');
+                setSearchedPokemons([]);
+                return;
+            }
+            setSearchedPokemons(pokemons);
+            setErrorMessage(null);
+        } catch (error) {
+            if (error instanceof Error) {
+                setErrorMessage(error.message);
+            } else {
+                setErrorMessage('予期せぬエラーが発生しました');
+            }
+            setSearchedPokemons([]);
+        }
+```
+
+JSX も複数の PokemonCard を表示できるように修正します。
+
+```
+            {searchedPokemons.length > 0 && (
+                <div className="flex flex-wrap gap-4 mb-4">
+                    {searchedPokemons.map((p) => (
+                        <PokemonCard key={p.name + p.imageUrl} pokemon={p} />
+                    ))}
+                </div>
+            )}
+```
+
+ブラウザで動作確認します。  
+ポケモン名に「ヒト」と入力して検索ボタンを押し、複数のポケモンが表示されることを確認します。
+
+<img src="images/step9.png" width="480"/>
