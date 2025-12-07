@@ -1,4 +1,4 @@
-# pokemon-search1
+# nextjs-pokemon-search1
 
 本プロジェクトは Next.js を使って簡単なウェブアプリケーションを作ってみるチュートリアルです。
 
