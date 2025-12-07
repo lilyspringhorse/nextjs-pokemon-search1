@@ -8,6 +8,7 @@
 
 下記をインストールしておいてください
 
+-   Visual Studio Code
 -   Node.js 18.18 以降
 
 ## STEP1: アプリケーションの作成
